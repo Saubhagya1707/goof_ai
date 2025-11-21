@@ -9,7 +9,7 @@ class ToolOut(BaseModel):
 
 class AgentOut(BaseModel):
     name: str
-    prompt: str
+    base_prompt: str
     is_scheduled: bool
     tools: List[ToolOut] = []
 

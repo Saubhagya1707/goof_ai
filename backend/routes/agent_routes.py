@@ -21,7 +21,7 @@ def get_agent(agent_id: int, db: Session = Depends(get_db)):
 async def create_agent(agent: schemas.AgentOut, db: Session = Depends(get_db)):
     db_agent = models.Agent(
         name=agent.name,
-        base_prompt=agent.prompt,
+        base_prompt=agent.base_prompt,
         is_scheduled=agent.is_scheduled
     )
     db.add(db_agent)
