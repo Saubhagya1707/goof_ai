@@ -1,0 +1,15 @@
+<div class="sidebar" *ngIf="state$ | async as s" [style.width.px]="s.sidebarOpen ? s.sidebarWidth : 0">
+  <div class="sidebar-inner" [class.closed]="!s.sidebarOpen">
+    <div class="sidebar-header">
+      <!-- <button class="btn-toggle" (click)="toggle()">☰</button> -->
+      <h3 class="logo">Goof AI</h3>
+    </div>
+
+    <nav class="nav">
+      <ul>
+        <li *ngFor="let i of items">{{ i }}</li>
+      </ul>
+    </nav>
+
+  </div>
+</div>

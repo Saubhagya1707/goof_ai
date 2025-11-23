@@ -1,0 +1,27 @@
+:root {
+	--sidebar-bg: #0f172a;
+	--sidebar-fg: #ffffff;
+	--navbar-bg: #ffffff;
+	--navbar-fg: #111827;
+	--main-bg: #f8fafc;
+}
+
+.app-layout {
+	display: flex;
+	height: 100vh;
+	width: 100%;
+	overflow: hidden;
+}
+
+.content-area {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+}
+
+/* small helpers */
+body, html, :root {
+	height: 100%;
+}
+

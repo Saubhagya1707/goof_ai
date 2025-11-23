@@ -1,0 +1,2 @@
+.main-panel{ display:flex; flex-direction:column; height:100vh; background:var(--main-bg,#f7fafc); }
+.main-content{ padding:16px; flex:1; overflow:auto }

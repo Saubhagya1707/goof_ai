@@ -15,6 +15,11 @@ from auth.security import (
     hash_password
 )
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 user_admin_router = APIRouter(prefix="/admin", tags=["User Admin"])
 
 
@@ -30,10 +35,10 @@ def login_for_access_token(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
         )
-
+    logger.info("User '%s' authenticated successfully", user.email)
     access_token = create_access_token(
         data={"sub": user.email},
-        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        expires_delta=timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
     )
 
     return {"access_token": access_token, "token_type": "bearer"}
