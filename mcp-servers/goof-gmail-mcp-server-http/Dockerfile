@@ -18,7 +18,7 @@ ENV GOOF_AI_AUTH_URI=""
 # Install dependencies
 RUN uv sync
 
-EXPOSE $PORT
+EXPOSE 8010
 
 # Run the FastMCP server
 CMD ["uv", "run", "main.py"]

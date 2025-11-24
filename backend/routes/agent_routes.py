@@ -19,13 +19,33 @@ def get_agent(agent_id: int, db: Session = Depends(get_db), current_user: Annota
     return result
 
 @agent_router.post("/", response_model=schemas.AgentOut)
-def create_agent(agent: schemas.AgentOut, db: Session = Depends(get_db), current_user: Annotated[schemas.UserResponse, Depends(get_current_user)] = None):
+def create_agent(agent: schemas.AgentIn, db: Session = Depends(get_db), current_user: Annotated[schemas.UserResponse, Depends(get_current_user)] = None):
+    if agent.is_scheduled and not agent.frequency:
+        raise ValueError("Scheduled agents must have a frequency set")
     db_agent = models.Agent(
         name=agent.name,
         base_prompt=agent.base_prompt,
-        is_scheduled=agent.is_scheduled
+        is_scheduled=agent.is_scheduled,
+        owner_id=current_user.id
     )
+    if agent.frequency and agent.is_scheduled:
+        db_agent.frequency = agent.frequency
     db.add(db_agent)
+    db.commit()
+    db.refresh(db_agent)
+    return db_agent
+
+@agent_router.put("/{agent_id}", response_model=schemas.AgentOut)
+def add_tool_to_agent(agent_id: int, tool_ids: List[int], db: Session = Depends(get_db), current_user: Annotated[schemas.UserResponse, Depends(get_current_user)] = None):
+    db_agent = db.query(models.Agent).filter(models.Agent.id == agent_id).first()
+    if not db_agent:
+        raise ValueError("Agent not found")
+    
+    for tool_id in tool_ids:
+        tool = db.query(models.Tool).filter(models.Tool.id == tool_id).first()
+        if tool and tool not in db_agent.tools:
+            db_agent.tools.append(tool)
+    
     db.commit()
     db.refresh(db_agent)
     return db_agent

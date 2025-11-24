@@ -9,3 +9,4 @@ python-dotenv==1.2.1
 python-jose==3.5.0
 passlib[argon2]==1.7.4
 python-multipart==0.0.20
+google-genai==1.52.0

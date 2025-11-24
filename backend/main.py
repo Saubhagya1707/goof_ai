@@ -3,13 +3,23 @@ load_dotenv()
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from utils.scheduler import start_scheduler
 from routes.agent_routes import agent_router
 from routes.oauth2_routes import oauth2_router
 from auth.router import user_admin_router
 from routes.tool_routes import tool_router
+from contextlib import asynccontextmanager
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Start scheduler when API starts
+    start_scheduler()
+    print("Scheduler started ...")
+    yield
+
+app = FastAPI(lifespan=lifespan)
+# app = FastAPI()
 
 # CORS configuration
 # Allow common local/dev origins and docker service names via a regex to avoid

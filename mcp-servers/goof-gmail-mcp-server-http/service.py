@@ -203,8 +203,8 @@ class GmailClient:
                 logger.debug(f"Successfully processed {len(emails)} emails")
                 return json.dumps({"emails": convert_datetime_fields(emails)})
             
-            # Execute the operation with token refresh handling
-            return self._handle_token_refresh(_operation)
+            # Execute the operation directly (token refresh wrapper removed)
+            return _operation()
             
         except HttpError as e:
             logger.error(f"Gmail API Exception: {str(e)}")
@@ -262,8 +262,8 @@ class GmailClient:
                     "labelIds": send_response.get('labelIds', [])
                 })
             
-            # Execute the operation with token refresh handling
-            return self._handle_token_refresh(_operation)
+            # Execute the operation directly (token refresh wrapper removed)
+            return _operation()
             
         except HttpError as e:
             logger.error(f"API Exception: {str(e)}")
@@ -368,8 +368,8 @@ class GmailClient:
                         "status": "error"
                     })
             
-            # Execute the operation with token refresh handling
-            return self._handle_token_refresh(_operation)
+            # Execute the operation directly (token refresh wrapper removed)
+            return _operation()
             
         except HttpError as e:
             logger.error(f"Gmail API Exception: {str(e)}")

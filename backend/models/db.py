@@ -25,7 +25,12 @@ class Agent(Base):
     name = Column(String, unique=True, index=True)
     base_prompt = Column(String, index=True)
     is_scheduled = Column(Boolean, default=False)
+    frequency = Column(String(10), nullable=True)  # Enum: 'hourly', 'daily', 'weekly'
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    
+    owner = relationship("User", foreign_keys=[owner_id])
     tools = relationship("Tool", secondary="agent_tools", back_populates="agents")
+
 
 class AgentTool(Base):
     __tablename__ = "agent_tools"

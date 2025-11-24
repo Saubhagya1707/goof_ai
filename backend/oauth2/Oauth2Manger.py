@@ -131,7 +131,7 @@ class OAuth2Manager:
             logger.debug("Existing token found. Updating...")
             existing.access_token = token_data.get("access_token")
             existing.refresh_token = token_data.get("refresh_token", existing.refresh_token)
-            existing.expires_at = token_data.get("expires_in")
+            existing.expires_at = token_data.get("expires_at")
             existing.token_type = token_data.get("token_type")
             existing.scope = token_data.get("scope")
             existing.id_token = token_data.get("id_token")
@@ -143,7 +143,7 @@ class OAuth2Manager:
                 tool_id=tool_id,
                 access_token=token_data.get("access_token"),
                 refresh_token=token_data.get("refresh_token"),
-                expires_at=token_data.get("expires_in"),
+                expires_at=token_data.get("expires_at"),
                 token_type=token_data.get("token_type"),
                 scope=token_data.get("scope"),
                 id_token=token_data.get("id_token"),
