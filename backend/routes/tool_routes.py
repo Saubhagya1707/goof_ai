@@ -23,7 +23,7 @@ If the tool uses OAuth2, this will retrieve the stored token for the user,
 refreshing it if necessary.
 """
 
-@tool_router.get('/token')
+@tool_router.post('/token')
 def get_tool_token(request: TokenRequest, db: Session = Depends(get_db)):
     tool = db.query(models.Tool).filter(models.Tool.id == request.tool_id).first()
     if not tool:

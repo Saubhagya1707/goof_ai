@@ -1,7 +1,7 @@
 import requests
 import logging
 from urllib.parse import urlencode
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 from models.db import OAuthToken
 
@@ -84,7 +84,7 @@ class OAuth2Manager:
                      mask(token_data.get("access_token")),
                      mask(token_data.get("refresh_token")))
 
-        token_data["expires_at"] = datetime.utcnow() + timedelta(seconds=token_data.get("expires_in", 3600))
+        token_data["expires_at"] = datetime.now(timezone.utc) + timedelta(seconds=token_data.get("expires_in", 3600))
         return token_data
 
     # ----------------------------
@@ -112,7 +112,7 @@ class OAuth2Manager:
         logger.info("Token refreshed successfully for provider='%s'", provider)
         logger.debug("New access token=%s", mask(token_data.get("access_token")))
 
-        token_data["expires_at"] = datetime.utcnow() + timedelta(seconds=token_data.get("expires_in", 3600))
+        token_data["expires_at"] = datetime.now(timezone.utc) + timedelta(seconds=token_data.get("expires_in", 3600))
         return token_data
 
     # ----------------------------
@@ -181,7 +181,7 @@ class OAuth2Manager:
             raise Exception("No OAuth token stored for user")
 
         # Still valid?
-        if token.expires_at and token.expires_at > datetime.utcnow():
+        if token.expires_at and token.expires_at > datetime.now(timezone.utc):
             logger.info("Access token for user=%s provider='%s' tool_id=%s is still valid", user_id, provider, tool_id)
             return token.access_token
 
