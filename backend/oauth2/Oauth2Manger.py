@@ -118,12 +118,12 @@ class OAuth2Manager:
     # ----------------------------
     # Save tokens in DB
     # ----------------------------
-    def save_tokens(self, user_id: int, provider: str, token_data: dict):
-        logger.info("Saving OAuth token for user=%s provider='%s'", user_id, provider)
+    def save_tokens(self, user_id: int, provider: str, token_data: dict, tool_id: int = None):
+        logger.info("Saving OAuth token for user=%s provider='%s' tool_id=%s", user_id, provider, tool_id)
 
         existing = (
             self.db.query(OAuthToken)
-            .filter_by(user_id=user_id, provider=provider)
+            .filter_by(user_id=user_id, provider=provider, tool_id=tool_id)
             .first()
         )
 
@@ -131,7 +131,7 @@ class OAuth2Manager:
             logger.debug("Existing token found. Updating...")
             existing.access_token = token_data.get("access_token")
             existing.refresh_token = token_data.get("refresh_token", existing.refresh_token)
-            existing.expires_at = token_data.get("expires_at")
+            existing.expires_at = token_data.get("expires_in")
             existing.token_type = token_data.get("token_type")
             existing.scope = token_data.get("scope")
             existing.id_token = token_data.get("id_token")
@@ -140,9 +140,10 @@ class OAuth2Manager:
             new_token = OAuthToken(
                 user_id=user_id,
                 provider=provider,
+                tool_id=tool_id,
                 access_token=token_data.get("access_token"),
                 refresh_token=token_data.get("refresh_token"),
-                expires_at=token_data.get("expires_at"),
+                expires_at=token_data.get("expires_in"),
                 token_type=token_data.get("token_type"),
                 scope=token_data.get("scope"),
                 id_token=token_data.get("id_token"),
@@ -150,49 +151,49 @@ class OAuth2Manager:
             self.db.add(new_token)
 
         self.db.commit()
-        logger.info("OAuth token saved for user=%s provider='%s'", user_id, provider)
+        logger.info("OAuth token saved for user=%s provider='%s' tool_id=%s", user_id, provider, tool_id)
 
     # ----------------------------
     # Load tokens from DB
     # ----------------------------
-    def load_tokens(self, user_id: int, provider: str):
-        logger.debug("Loading tokens for user=%s provider='%s'", user_id, provider)
+    def load_tokens(self, user_id: int, provider: str, tool_id: int = None):
+        logger.debug("Loading tokens for user=%s provider='%s' tool_id=%s", user_id, provider, tool_id)
         token = (
             self.db.query(OAuthToken)
-            .filter_by(user_id=user_id, provider=provider)
+            .filter_by(user_id=user_id, provider=provider, tool_id=tool_id)
             .first()
         )
         if token:
             logger.debug("Token loaded. Expires at: %s", token.expires_at)
         else:
-            logger.warning("No token found for user=%s provider='%s'", user_id, provider)
+            logger.warning("No token found for user=%s provider='%s' tool_id=%s", user_id, provider, tool_id)
         return token
 
     # ----------------------------
     # Get usable access token (auto-refresh)
     # ----------------------------
-    def get_valid_access_token(self, user_id: int, provider: str) -> str:
-        logger.info("Fetching valid access token for user=%s provider='%s'", user_id, provider)
+    def get_valid_access_token(self, user_id: int, provider: str, tool_id: int = None) -> str:
+        logger.info("Fetching valid access token for user=%s provider='%s' tool_id=%s", user_id, provider, tool_id)
 
-        token: OAuthToken = self.load_tokens(user_id, provider)
+        token: OAuthToken = self.load_tokens(user_id, provider, tool_id)
         if not token:
-            logger.error("User %s has no stored token for provider '%s'", user_id, provider)
+            logger.error("User %s has no stored token for provider '%s' tool_id=%s", user_id, provider, tool_id)
             raise Exception("No OAuth token stored for user")
 
         # Still valid?
         if token.expires_at and token.expires_at > datetime.utcnow():
-            logger.info("Access token for user=%s provider='%s' is still valid", user_id, provider)
+            logger.info("Access token for user=%s provider='%s' tool_id=%s is still valid", user_id, provider, tool_id)
             return token.access_token
 
         # Refresh
         if not token.refresh_token:
-            logger.error("Missing refresh token for user=%s provider='%s'. Reauthorization required.", user_id, provider)
+            logger.error("Missing refresh token for user=%s provider='%s' tool_id=%s. Reauthorization required.", user_id, provider, tool_id)
             raise Exception("Refresh token missing, user must reauthorize")
 
-        logger.info("Access token expired. Refreshing... user=%s provider='%s'", user_id, provider)
+        logger.info("Access token expired. Refreshing... user=%s provider='%s' tool_id=%s", user_id, provider, tool_id)
 
         new_token = self.refresh_token(provider, token.refresh_token)
-        self.save_tokens(user_id, provider, new_token)
+        self.save_tokens(user_id, provider, new_token, tool_id)
 
-        logger.info("Token refreshed for user=%s provider='%s'", user_id, provider)
+        logger.info("Token refreshed for user=%s provider='%s' tool_id=%s", user_id, provider, tool_id)
         return new_token["access_token"]

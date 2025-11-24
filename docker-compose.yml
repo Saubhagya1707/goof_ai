@@ -32,5 +32,13 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  gmail-mcp:
+    build: ./mcp-servers/goof-gmail-mcp-server-http
+    ports:
+      - "8010:8010"
+    env_file:
+      - ./mcp-servers/goof-gmail-mcp-server-http/.env 
+    container_name: goof-gmail-mcp-server-http
+    restart: unless-stopped
 volumes:
   pgdata:
