@@ -14,7 +14,10 @@ _scheduler_thread = None
 async def run_agents_by_frequency(frequency):
     db = SessionLocal()
     try:
-        agents = db.query(Agent).filter(Agent.frequency == frequency).all()
+        agents = db.query(Agent).filter(
+            Agent.frequency == frequency,
+            Agent.active.is_(True)
+        ).all()
         for agent in agents:
             try:
                 logger.info("Running agent %s with frequency %s", agent.name, frequency)
@@ -31,7 +34,7 @@ async def run_agents_by_frequency(frequency):
 async def scheduler_loop():
     while True:
         # Every minute
-        await run_agents_by_frequency('every_minute')
+        # await run_agents_by_frequency('every_minute')
         # Every hour
         if time.localtime().tm_min == 0:
             await run_agents_by_frequency('hourly')

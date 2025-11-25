@@ -40,6 +40,7 @@ class Agent(Base):
     is_scheduled = Column(Boolean, default=False)
     frequency = Column(String(10), nullable=True)  # Enum: 'hourly', 'daily', 'weekly'
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    active = Column(Boolean, default=True, nullable=False)
     
     owner = relationship("User", foreign_keys=[owner_id])
     tools = relationship("Tool", secondary="agent_tools", back_populates="agents")
@@ -119,6 +120,7 @@ class AgentExecution(Base):
     agent_id = Column(Integer, ForeignKey("agents.id", ondelete="CASCADE"), nullable=False)
     started_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     completed_at = Column(TIMESTAMP(timezone=True), nullable=True)
+    status = Column(Boolean, default=False, nullable=False)
 
     agent = relationship("Agent", back_populates="executions")
     logs = relationship("AgentExecutionLog", back_populates="execution", cascade="all, delete")

@@ -14,6 +14,7 @@ class AgentExecutor:
     def __init__(self, db, agent: Models.Agent):
         self.agent = agent
         self.db = db
+        self.logs: List[Log] = []
         self.logger = logging.getLogger(__name__)
 
     def init_execution(self):
@@ -25,9 +26,9 @@ class AgentExecutor:
         self.db.refresh(execution)
         self.execution = execution
 
-    def save_logs(self, logs: List[Log]):
+    def save_logs(self):
         db_logs: List[Models.AgentExecutionLog] = []
-        for log in logs:
+        for log in self.logs:
             db_logs.append(Models.AgentExecutionLog(
                 agent_execution_id=self.execution.id,
                 event=log.event,
@@ -66,7 +67,7 @@ class AgentExecutor:
         cleaned = replace_refs(schema)
         return cleaned
 
-    async def execute(self):
+    async def process(self):
         # Logic to execute the agent's tasks
         prompt = self.agent.base_prompt
         db_servers = self.agent.tools
@@ -76,12 +77,11 @@ class AgentExecutor:
             description=s.description,
             name=s.name
         ) for s in db_servers]
-        self.init_execution()
         self.logger.info(f"Executing agent '{self.agent.name}' with prompt: {prompt} and servers: {servers}")
 
         gemini = GeminiFunctions()
-        logs: List[Log] = []
-        logs.append(Log(
+        
+        self.logs.append(Log(
             event=EVENT_TYPE.SERVER_SELECTION_INIT,
             time=datetime.now(),
             message=f"Started execution of {self.agent.name}",
@@ -90,7 +90,7 @@ class AgentExecutor:
         # Execution loop
         while True:
             server_selection: ServerSelectionResponse = gemini.generate_structured(
-                prompt=server_selection_prompt(servers, prompt, str(logs)),
+                prompt=server_selection_prompt(servers, prompt, str(self.logs)),
                 schema=ServerSelectionResponse
             )
             if server_selection.server_id == -1:
@@ -111,7 +111,7 @@ class AgentExecutor:
             if not selected_server:
                 self.logger.info(f"Selected server ID '{server_selection.server_id}' not found. Stopping execution.")
                 break
-            logs.append(Log(
+            self.logs.append(Log(
                 event=EVENT_TYPE.SERVER_SELECTED,
                 time=datetime.now(),
                 message=f"Selected server: {selected_server.name}",
@@ -134,17 +134,17 @@ class AgentExecutor:
                     for tool in selected_server_tools
                 ]
 
-                logs.append(Log(
+                self.logs.append(Log(
                     event=EVENT_TYPE.TOOL_SELECTION_INIT,
                     time=datetime.now(),
                     message=f"Identifying appropriate tool...",
                     success=True
                 ))
                 
-                tool_name, args = gemini.get_function_calls(tool_selection_prompt(self.agent.owner_id,selected_server_tools, prompt, str(logs)), selected_server_tools)
+                tool_name, args = gemini.get_function_calls(tool_selection_prompt(self.agent.owner_id,selected_server_tools, prompt, str(self.logs)), selected_server_tools)
                 self.logger.info(f"Function call detected: {tool_name} with args: {args}")
                 
-                logs.append(Log(
+                self.logs.append(Log(
                     event=EVENT_TYPE.TOOL_SELECTED,
                     time=datetime.now(),
                     message=f"Selected tool: {tool_name} with arguments: {args}",
@@ -153,7 +153,7 @@ class AgentExecutor:
                 result = await client.call_tool(tool_name, arguments=args)
 
                 
-                logs.append(Log(
+                self.logs.append(Log(
                     event=EVENT_TYPE.TOOL_RESULT,
                     time=datetime.now(),
                     message=f"Tool result: {result}",
@@ -161,29 +161,37 @@ class AgentExecutor:
                 ))
                 self.logger.info(f"Tool '{tool_name}' executed")
 
-                logs.append(Log(
+                self.logs.append(Log(
                     event=EVENT_TYPE.RESPONSE_GENERATION_INIT,
                     time=datetime.now(),
                     message=f"Generating response...",
                     success=True
                 ))
 
-                res: GenerationResponse = gemini.generate_structured(generation_prompt(prompt, str(logs)), GenerationResponse)
+                res: GenerationResponse = gemini.generate_structured(generation_prompt(prompt, str(self.logs)), GenerationResponse)
 
                 if res.response:
-                    logs.append(Log(
+                    self.logs.append(Log(
                         event=EVENT_TYPE.RESPONSE_GENERATED,
                         time=datetime.now(),
                         message=f"{res.response}",
                         success=True
                     ))
                     self.logger.info(f"Agent Execution Completed Id: {self.execution.id} saving logs...")
-                    self.save_logs(logs)
-                    self.logger.info(f"Logs saved successfully..")
                     break
-                logs.append(Log(
+                self.logs.append(Log(
                     event=EVENT_TYPE.GENERATION_SKIPPED,
                     time=datetime.now(),
                     message=f"Skipping generation. Further actions are required.",
                     success=True
                 )) 
+
+    async def execute(self):
+        try:
+            self.init_execution()
+            await self.process()
+        except Exception as e:
+            raise e
+        finally:
+            self.save_logs()
+            self.logger.info(f"Logs saved successfully..")

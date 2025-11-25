@@ -50,6 +50,17 @@ def add_tool_to_agent(agent_id: int, tool_ids: List[int], db: Session = Depends(
     db.refresh(db_agent)
     return db_agent
 
+@agent_router.put("/{agent_id}/{is_active}", response_model=schemas.AgentOut)
+def update_agent_status(agent_id: int, is_active: bool, db: Session = Depends(get_db), current_user: Annotated[schemas.UserResponse, Depends(get_current_user)] = None):
+    db_agent = db.query(models.Agent).filter(models.Agent.id == agent_id).first()
+    if not db_agent:
+        raise ValueError("Agent not found")
+    
+    db_agent.active = is_active
+    db.commit()
+    db.refresh(db_agent)
+    return db_agent
+
 @agent_router.delete("/{agent_id}")
 def delete_agent(agent_id: int, db: Session = Depends(get_db), current_user: Annotated[schemas.UserResponse, Depends(get_current_user)] = None):
     db_agent = db.query(models.Agent).filter(models.Agent.id == agent_id).first()

@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from utils.scheduler import start_scheduler
 from routes.agent_routes import agent_router
 from routes.oauth2_routes import oauth2_router
+from routes.agent_execution_routes import agent_execution_router
 from auth.router import user_admin_router
 from routes.tool_routes import tool_router
 from contextlib import asynccontextmanager
@@ -49,6 +50,7 @@ app.include_router(agent_router, prefix="/goof-ai/v1")
 app.include_router(oauth2_router, prefix="/goof-ai/v1")
 app.include_router(user_admin_router, prefix="/goof-ai/v1")
 app.include_router(tool_router, prefix="/goof-ai/v1")
+app.include_router(agent_execution_router, prefix="/goof-ai/v1")
 
 @app.get("/")
 async def read_root():

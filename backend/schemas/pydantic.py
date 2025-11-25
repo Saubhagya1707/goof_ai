@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 from enum import Enum
 
+from schemas.agent_execution import EVENT_TYPE
 from pydantic import BaseModel, EmailStr
 
 
@@ -33,6 +34,7 @@ class AgentOut(BaseModel):
     owner_id: int | None = None
     owner: UserBasic | None = None
     tools: List[ToolOut] = []
+    active: bool
 
     class Config:
         from_attributes = True
@@ -77,5 +79,23 @@ class UserResponse(BaseModel):
     is_active: bool
     is_superuser: bool
 
+    class Config:
+        orm_mode = True
+
+class AgentExecutionOut(BaseModel):
+    id: int
+    agent: AgentOut
+    started_at: datetime
+    completed_at: datetime | None
+    status: bool
+    class Config:
+        orm_mode = True
+
+class AgentExecutionLog(BaseModel):
+    id: int
+    message: str
+    event: EVENT_TYPE
+    time: datetime
+    execution: AgentExecutionOut
     class Config:
         orm_mode = True
