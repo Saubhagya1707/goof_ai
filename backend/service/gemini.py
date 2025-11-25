@@ -2,6 +2,7 @@ import os
 from typing import Any, List
 from google import genai
 from google.genai import types
+from tenacity import retry
 import logging
 
 class GeminiFunctions:
@@ -43,7 +44,6 @@ class GeminiFunctions:
             return tool_name, args
         else:
             return None, None
-        
 
     
     def generate_structured(self, prompt: str, schema: Any) -> dict:

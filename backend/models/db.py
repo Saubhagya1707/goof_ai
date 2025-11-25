@@ -1,9 +1,22 @@
 from sqlalchemy import ( 
-    Column, Integer, String, ForeignKey, Boolean, Text, BigInteger, TIMESTAMP, func, UniqueConstraint
+    Column, Integer, String, ForeignKey, Boolean, Text, BigInteger, TIMESTAMP, func, UniqueConstraint, Enum
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 from utils.db import Base
+from enum import Enum as PyEnum
+
+
+class ExecutionEventType(PyEnum):
+    SERVER_SELECTION_INIT = "SERVER_SELECTION_INIT"
+    SERVER_SELECTED = "SERVER_SELECTED"
+    TOOL_SELECTION_INIT = "TOOL_SELECTION_INIT"
+    TOOL_SELECTED = "TOOL_SELECTED"
+    TOOL_RESULT = "TOOL_RESULT"
+    RESPONSE_GENERATION_INIT = "RESPONSE_GENERATION_INIT"
+    RESPONSE_GENERATED = "RESPONSE_GENERATED"
+    GENERATION_SKIPPED = "GENERATION_SKIPPED"
+
 
 class Tool(Base):
     __tablename__ = "tools"
@@ -30,6 +43,7 @@ class Agent(Base):
     
     owner = relationship("User", foreign_keys=[owner_id])
     tools = relationship("Tool", secondary="agent_tools", back_populates="agents")
+    executions = relationship("AgentExecution", back_populates="agent", cascade="all, delete")
 
 
 class AgentTool(Base):
@@ -96,4 +110,28 @@ class OAuthProvider(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     tools = relationship("Tool", back_populates="provider")  # Define the reverse relationship
+
+
+class AgentExecution(Base):
+    __tablename__ = "agent_execution"
+
+    id = Column(Integer, primary_key=True, index=True)
+    agent_id = Column(Integer, ForeignKey("agents.id", ondelete="CASCADE"), nullable=False)
+    started_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+    completed_at = Column(TIMESTAMP(timezone=True), nullable=True)
+
+    agent = relationship("Agent", back_populates="executions")
+    logs = relationship("AgentExecutionLog", back_populates="execution", cascade="all, delete")
+
+
+class AgentExecutionLog(Base):
+    __tablename__ = "agent_execution_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    agent_execution_id = Column(Integer, ForeignKey("agent_execution.id", ondelete="CASCADE"), nullable=False)
+    event = Column(Enum(ExecutionEventType, name="execution_event_type"), nullable=False)
+    message = Column(Text, nullable=True)
+    time = Column(TIMESTAMP(timezone=True), server_default=func.now())
+
+    execution = relationship("AgentExecution", back_populates="logs")
 

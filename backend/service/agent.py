@@ -4,39 +4,44 @@ from typing import List
 import models.db as Models
 import logging
 from fastmcp import Client
-from schemas.agent_execution import ServerSelectionResponse, GenerationResponse
+from schemas.agent_execution import ServerSelectionResponse, GenerationResponse, Log, Server, EVENT_TYPE
 from service.prompt_service import server_selection_prompt, tool_selection_prompt, generation_prompt
 from service.gemini import GeminiFunctions
 from google.genai import types
 from pydantic import BaseModel
 
-class EVENT_TYPE(str, Enum):
-    SERVER_SELECTION_INIT = "SERVER_SELECTION_INIT"
-    SERVER_SELECTED = "SERVER_SELECTION"
-    TOOL_SELECTION_INIT = "TOOL_SELECTION_INIT"
-    TOOL_SELECTED = "TOOL_SELECTION"
-    TOOL_RESULT = "TOOL_RESULT"
-    RESPONSE_GENERATION_INIT = "RESPONSE_GENERATION_INIT"
-    RESPONSE_GENERATED = "RESPONSE_GENERATED"
-    GENERATION_SKIPPED = "GENERATION_SKIPPED"
-
-class Log(BaseModel):
-    event: EVENT_TYPE
-    time: datetime
-    message: str
-    success: bool
-
-
-class Server(BaseModel):
-    id: int
-    url: str
-    description: str
-    name: str
-
 class AgentExecutor:
-    def __init__(self, agent: Models.Agent):
+    def __init__(self, db, agent: Models.Agent):
         self.agent = agent
+        self.db = db
         self.logger = logging.getLogger(__name__)
+
+    def init_execution(self):
+        execution = Models.AgentExecution(
+            agent_id=self.agent.id,
+        )
+        self.db.add(execution)
+        self.db.commit()
+        self.db.refresh(execution)
+        self.execution = execution
+
+    def save_logs(self, logs: List[Log]):
+        db_logs: List[Models.AgentExecutionLog] = []
+        for log in logs:
+            db_logs.append(Models.AgentExecutionLog(
+                agent_execution_id=self.execution.id,
+                event=log.event,
+                message=log.message,
+                time=log.time
+            ))
+        self.db.add_all(db_logs)
+        self.db.commit()
+        for log in db_logs:
+            self.db.refresh(log)
+        self.execution.completed_at = datetime.now()
+        self.db.add(self.execution)
+        self.db.commit()
+        self.db.refresh(self.execution)
 
     def clean_schema(self,schema: dict) -> dict:
         """Remove $ref and inline $defs definitions for Gemini compatibility."""
@@ -71,7 +76,7 @@ class AgentExecutor:
             description=s.description,
             name=s.name
         ) for s in db_servers]
-
+        self.init_execution()
         self.logger.info(f"Executing agent '{self.agent.name}' with prompt: {prompt} and servers: {servers}")
 
         gemini = GeminiFunctions()
@@ -172,9 +177,9 @@ class AgentExecutor:
                         message=f"{res.response}",
                         success=True
                     ))
-                    with open('execution_logs.log', 'w') as log_file:
-                        for log in logs:
-                            log_file.write(str(log))
+                    self.logger.info(f"Agent Execution Completed Id: {self.execution.id} saving logs...")
+                    self.save_logs(logs)
+                    self.logger.info(f"Logs saved successfully..")
                     break
                 logs.append(Log(
                     event=EVENT_TYPE.GENERATION_SKIPPED,
@@ -182,12 +187,3 @@ class AgentExecutor:
                     message=f"Skipping generation. Further actions are required.",
                     success=True
                 )) 
-            
-
-
-
-
-            
-            
-
-        

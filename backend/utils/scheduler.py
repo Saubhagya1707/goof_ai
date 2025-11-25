@@ -4,7 +4,6 @@ from utils.db import SessionLocal
 from models.db import Agent
 import logging
 from service.agent import AgentExecutor
-
 # Configure root logging once and get a module logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,7 +18,7 @@ async def run_agents_by_frequency(frequency):
         for agent in agents:
             try:
                 logger.info("Running agent %s with frequency %s", agent.name, frequency)
-                executor = AgentExecutor(agent)
+                executor = AgentExecutor(agent=agent, db=db)
                 await executor.execute()
                 # TODO: place actual agent execution logic here
             except Exception:
