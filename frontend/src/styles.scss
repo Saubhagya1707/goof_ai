@@ -1,0 +1,46 @@
+/* You can add global styles to this file, and also import other style files */
+
+
+/* You can add global styles to this file, and also import other style files */
+@use 'primeicons/primeicons.css';
+@import "primeflex/primeflex.css";
+
+
+
+*{
+    padding: 0;
+    margin: 0;
+    border-color: var(--p-border);
+}
+    
+html {
+  font-size: 14px;
+}
+
+.internal-page-header {
+  font-size: 24px;
+  // font-weight: bold;
+  color: var(--primary-color);
+  text-align: center;
+  border-bottom: 2px solid var(--secondary-color);
+  background-color: var(--background-light);
+}
+
+.internal-page-utility-area {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 2;
+}
+
+.p-paginator {
+  margin-top: 5px;
+}
+
+.p-button {
+  padding: 0.5rem 1rem;
+}
+
+.p-select {
+  padding: 0.5rem 1rem;
+}

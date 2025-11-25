@@ -1,8 +1,0 @@
-.login-page{display:flex;align-items:center;justify-content:center;height:calc(100vh - 56px)}
-.login-form{width:320px;background:#fff;padding:20px;border-radius:8px;box-shadow:0 6px 18px rgba(15,23,42,0.08)}
-.login-form h2{margin-top:0;margin-bottom:12px}
-.login-form label{display:block;margin-bottom:10px;font-size:13px}
-.login-form input{width:100%;padding:8px 10px;margin-top:6px;border:1px solid #e6e6e6;border-radius:6px}
-.actions{display:flex;justify-content:flex-end}
-.actions button{padding:8px 12px;border-radius:6px;border:none;background:#0b5cff;color:#fff}
-.error{color:#d9534f;margin-top:10px}
