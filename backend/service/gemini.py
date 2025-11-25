@@ -13,6 +13,7 @@ class GeminiFunctions:
         self.model = os.getenv("GEMINI_MODEL", 'gemini-2.0-flash')
         logging.basicConfig()
         self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.WARNING)
 
     def generate_text(self, prompt: str) -> str:
         response = self.client.generate_text(

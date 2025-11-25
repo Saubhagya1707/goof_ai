@@ -9,7 +9,9 @@ from routes.oauth2_routes import oauth2_router
 from auth.router import user_admin_router
 from routes.tool_routes import tool_router
 from contextlib import asynccontextmanager
+import logging
 
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
