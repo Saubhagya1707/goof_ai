@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, Observable } from "rxjs";
-import { AgentOut } from "../interfaces/interfaces";
+import { Agent, AgentExecution } from "../interfaces/interfaces";
 import { HttpConfigService } from "../config/http-config.service";
 import { environment } from "../../environment/environment";
 
@@ -10,7 +10,12 @@ export class AgentService {
   httpClient: HttpClient = inject(HttpClient)
   config: HttpConfigService = inject(HttpConfigService)
 
-  get_agents(): Observable<AgentOut[]> {
-    return this.httpClient.get<AgentOut[]>(`${environment.apiUrl}/agents/`)
+  getAgents(): Observable<Agent[]> {
+    return this.httpClient.get<Agent[]>(`${environment.apiUrl}/agents/`)
+  }
+
+
+  getExecutionsForAgent(agentId: number): Observable<AgentExecution[]>{
+    return this.httpClient.get<AgentExecution[]>(`${environment.apiUrl}/agent-execution/agent/${agentId}`)
   }
 }

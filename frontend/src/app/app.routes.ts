@@ -5,7 +5,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AuthGuard } from './pages/login/auth.guard';
 import { AgentsComponent } from './pages/agents/agents.component';
-import { NodeDetailComponent } from './pages/agents/detail-page/agent-detail/agent-detail.component';
+import { AgentDetailComponent } from './pages/agents/detail-page/agent-detail/agent-detail.component';
 import { NotFoundComponent } from './core/not-found/not-found.component';
 
 export const defaultConfig: LayoutConfig = {
@@ -52,7 +52,7 @@ export const routes: Routes = [
                     },
                     {
                       path: ':agentId', // Shows NodeDetailComponent at /nodes/some-node
-                      component: NodeDetailComponent,
+                      component: AgentDetailComponent,
                       data: {
                         ...defaultConfig,
                         sidebar: {

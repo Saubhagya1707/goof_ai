@@ -1,5 +1,5 @@
 import { Routes } from "@angular/router";
-import { NodeDetailComponent } from "./detail-page/agent-detail/agent-detail.component";
+import { AgentDetailComponent } from "./detail-page/agent-detail/agent-detail.component";
 import { defaultConfig } from "../../app.routes";
 import { AgentsComponent } from "./agents.component";
 
@@ -10,7 +10,7 @@ export const nodeRoutes: Routes = [
         children: [
           {
             path: ':agentId',
-            component: NodeDetailComponent
+            component: AgentDetailComponent
           }
         ]
       }

@@ -27,6 +27,7 @@ class UserBasic(BaseModel):
         from_attributes = True
 
 class AgentOut(BaseModel):
+    id: int
     name: str
     base_prompt: str
     is_scheduled: bool

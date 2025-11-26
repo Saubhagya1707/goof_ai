@@ -18,7 +18,8 @@ export type FrequencyEnum =
   | "monthly"
   | null;
 
-export interface AgentOut {
+export interface Agent {
+  id: number
   name: string;
   base_prompt: string;
   is_scheduled: boolean;
@@ -27,4 +28,12 @@ export interface AgentOut {
   owner: UserBasic | null;
   tools: ToolOut[];
   active: boolean;
+}
+
+export interface AgentExecution {
+  id: number
+  agent: Agent
+  started_at: Date
+  completed_at: Date
+  status: boolean
 }
