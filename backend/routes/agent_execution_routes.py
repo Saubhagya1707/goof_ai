@@ -15,7 +15,7 @@ def get_common_params(
 ):
     return {"page": page, "size": size}
 
-@agent_execution_router.get("/agent/{agent_id}", response_model=List[schemas.AgentExecutionOut])
+@agent_execution_router.get("/agent/{agent_id}", response_model=schemas.PaginatedResponse[schemas.AgentExecutionOut])
 def get_all_executions_for_agent(agent_id: int,page_params: Annotated[dict, Depends(get_common_params)], db: Session = Depends(get_db), current_user: Annotated[schemas.UserResponse, Depends(get_current_user)] = None):
     agent = (
         db.query(Models.Agent)
@@ -33,9 +33,17 @@ def get_all_executions_for_agent(agent_id: int,page_params: Annotated[dict, Depe
         .offset((page_no - 1) * page_size)
         .limit(page_size).all()
     )
-    return executions
+    total = (
+        db.query(Models.AgentExecution).filter(Models.AgentExecution.agent_id == agent_id).count()
+    )
+    return {
+        "data": executions,
+        "total": total,
+        "page": page_no,
+        "size": page_size
+    } 
 
-@agent_execution_router.get("/{agent_execution_id}/logs", response_model=List[schemas.AgentExecutionLog])
+@agent_execution_router.get("/{agent_execution_id}/logs", response_model=schemas.PaginatedResponse[schemas.AgentExecutionLog])
 def get_all_logs_for_an_execution(agent_execution_id: int,page_params: Annotated[dict, Depends(get_common_params)], db: Session = Depends(get_db), current_user: Annotated[schemas.UserResponse, Depends(get_current_user)] = None):
     agent_execution = db.query(Models.AgentExecution).filter(Models.AgentExecution.id == agent_execution_id).first()
     if not agent_execution:
@@ -49,4 +57,15 @@ def get_all_logs_for_an_execution(agent_execution_id: int,page_params: Annotated
         .limit(page_size)
         .all()
     )
-    return logs
+    # total count
+    total_count = (
+        db.query(Models.AgentExecutionLog)
+        .filter(Models.AgentExecutionLog.agent_execution_id == agent_execution_id)
+        .count()
+    )
+    return {
+        "data": logs,
+        "total": total_count,
+        "page": page_no,
+        "size": page_size
+    }

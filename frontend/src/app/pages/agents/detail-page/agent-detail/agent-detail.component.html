@@ -33,9 +33,9 @@
         <span>{{ agent.active ? 'Yes' : 'No' }}</span>
 
         @if (agent.active) {
-          <i pRipple pTooltip="Click to Pause" class="pi pi-play-circle text-green-500 text-lg cursor-pointer"></i>
+          <i pRipple pTooltip="Click to Pause" (click)="updateAgentStatus(false)" class="pi pi-play-circle text-green-500 text-lg cursor-pointer"></i>
         } @else {
-          <i pRipple pTooltip="Click to Activate" class="pi pi-pause-circle text-red-500 text-lg cursor-pointer"></i>
+          <i pRipple pTooltip="Click to Activate" (click)="updateAgentStatus(true)" class="pi pi-pause-circle text-red-500 text-lg cursor-pointer"></i>
         }
       </div>
     </div>
@@ -50,6 +50,7 @@
     <div *ngIf="agent.is_scheduled" class="col-12 md:col-6 flex mb-1">
       <div class="font-bold mr-3 w-8rem">Frequency:</div>
       <div>{{ agent.frequency?.replace('_', ' ') }}</div>
+      <i (click)="updateFrequency()" pRipple pTooltip="update" class="pi pi-pencil ml-2 cursor-pointer"></i>
     </div>
 
      <!-- Frequency -->
@@ -89,6 +90,14 @@
         </tr>
       </ng-template>
     </p-table>
+    <p-paginator
+        (onPageChange)="onPageChange($event)"
+        [first]="first"
+        [rows]="executionPageData.size"
+        [totalRecords]="executionPageData.total"
+        [rowsPerPageOptions]="[10, 20, 30]"
+    >
+    </p-paginator>
   </div>
 
 </p-card>

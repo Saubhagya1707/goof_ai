@@ -11,8 +11,6 @@ export interface UserBasic {
 }
 
 export type FrequencyEnum =
-  | "every_minute"
-  | "every_5_minutes"
   | "hourly"
   | "daily"
   | "weekly"
@@ -40,4 +38,11 @@ export interface AgentExecution {
   started_at: Date
   completed_at: Date
   status: boolean
+}
+
+export interface PaginatedResponse<T> {
+  data: T[]
+  page: number
+  size: number
+  total: number
 }

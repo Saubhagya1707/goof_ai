@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Generic, List, Optional, TypeVar
 from enum import Enum
 
 from schemas.agent_execution import EVENT_TYPE
@@ -104,3 +104,11 @@ class AgentExecutionLog(BaseModel):
     execution: AgentExecutionOut
     class Config:
         orm_mode = True
+
+T = TypeVar("T")
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    data: List[T]
+    total: int
+    page: int
+    size: int
