@@ -19,9 +19,9 @@ import { FormsModule } from '@angular/forms';
     <div class="w-full h-screen flex flex-column relative  overflow-hidden">
       <header class="border-bottom-1 h-3rem flex align-items-center gap-2 px-2">
         <div pRipple class="cursor-pointer p-2" (click)="toggleSidebar($event)">
-          <i class="fa-solid fa-bars" style="color: var(--p-primary-400);"></i>
+          <i class="pi pi-bars" style="color: var(--p-primary-400);"></i>
         </div>
-        <h2 class="text-secondary">KubeAnywhere</h2>
+        <h2 class="text-secondary">goof.AI</h2>
         <div class="ml-auto inline-flex align-items-center gap-2">
         <!-- <p-select pTooltip="Default Namespace" (ngModelChange)="updateDefaultNamespace($event)" [(ngModel)]="selectedNamespace" class="text-sm w-8rem h-1.5rem bg-white" [options]="namespaces" [optionLabel]="'name'" [placeholder]="getDefaultNamespace()"></p-select> -->
         </div>

@@ -1,39 +1,65 @@
-<!-- lambda-detail.component.html -->
-<p-card class="w-full p-5" >
+<p-card class="w-full p-5">
   <ng-template pTemplate="header">
-    <div class="flex items-center justify-between">
+    <div class="flex align-items-center justify-content-between w-full">
       <h2 class="text-xl font-bold">{{ agent.name }}</h2>
-      <!-- optionally some action buttons like Edit / Delete etc -->
+
+      <div class="flex gap-2">
+        <button pButton label="Deploy" severity="info" class="p-button-sm"></button>
+        <button pButton label="Test" severity="success" class="p-button-sm"></button>
+      </div>
     </div>
   </ng-template>
 
-  <div class="mt-4 space-y-2">
-    <div class="flex gap-4">
-      <div><strong>Public URL:</strong></div>
-      <div>{{ agent.name || 'NA' }}</div>
+  <!-- ⚡ PrimeFlex Grid (2 columns on md+) -->
+  <div class="grid mt-2 mb-1 p-0">
+    
+    <!-- Last Execution -->
+    <div class="col-12 md:col-6 flex mb-1">
+      <div class="font-bold mr-3 w-8rem">Last Execution:</div>
+      <div>{{ agent.last_executed | date:'short' }}</div>
     </div>
-    <div class="flex gap-4">
-      <div><strong>Last Deployed:</strong></div>
-      <!-- <div>{{ agent.name | date:'short' }}</div> -->
-      <div>{{agent.name}}</div>
+
+    <!-- Created At -->
+    <div class="col-12 md:col-6 flex mb-1">
+      <div class="font-bold mr-3 w-8rem">Created At:</div>
+      <div>{{ agent.created_at | date:'short' }}</div>
     </div>
-    <div class="flex gap-4">
-      <div><strong>Created At:</strong></div>
-      <!-- <div>{{ agent.name | date:'short' }}</div> -->
-       <div>{{agent.name}}</div>
+
+    <!-- Active -->
+    <div class="col-12 md:col-6 flex mb-1">
+      <div class="font-bold mr-3 w-8rem">Active:</div>
+
+      <div class="flex align-items-center gap-2">
+        <span>{{ agent.active ? 'Yes' : 'No' }}</span>
+
+        @if (agent.active) {
+          <i pRipple pTooltip="Click to Pause" class="pi pi-play-circle text-green-500 text-lg cursor-pointer"></i>
+        } @else {
+          <i pRipple pTooltip="Click to Activate" class="pi pi-pause-circle text-red-500 text-lg cursor-pointer"></i>
+        }
+      </div>
     </div>
-    <div class="flex gap-4">
-      <div><strong>Active:</strong></div>
-      <div>{{ agent.active ? 'Yes' : 'No' }}</div>
-    </div>
-    <div class="flex gap-4">
-      <div><strong>Is Scheduled:</strong></div>
+
+    <!-- Is Scheduled -->
+    <div class="col-12 md:col-6 flex mb-1">
+      <div class="font-bold mr-3 w-8rem">Is Scheduled:</div>
       <div>{{ agent.is_scheduled ? 'Yes' : 'No' }}</div>
     </div>
-    <div *ngIf="agent.is_scheduled" class="flex gap-4">
-      <div><strong>Frequency:</strong></div>
-      <div>{{ agent.frequency }}</div>
+
+    <!-- Frequency -->
+    <div *ngIf="agent.is_scheduled" class="col-12 md:col-6 flex mb-1">
+      <div class="font-bold mr-3 w-8rem">Frequency:</div>
+      <div>{{ agent.frequency?.replace('_', ' ') }}</div>
     </div>
+
+     <!-- Frequency -->
+    <div class="col-12 md:col-6 flex mb-1">
+      <div class="font-bold mr-3 w-8rem">Connected Tools:</div>
+      @for(tool of agent.tools; track agent.id) {
+        <img [pTooltip]="tool.name" style="height: 15px; width: 15px;" [src]="tool.logo_uri"/>
+      }
+    </div>
+
   </div>
 
   <div class="mt-6">
@@ -53,13 +79,13 @@
         <tr>
             <td>{{exec.id}}</td>
           <td>{{ exec.started_at | date:'short' }}</td>
-          <td>{{ exec.completed_at | date:'short' }}</td>
+          <td>{{ exec.completed_at ? (exec.completed_at | date:'short') : 'NA' }} </td>
           <td>@if (exec.status) {
             <i style="color: green" class="pi pi-check"></i>
             }@else {
                 <i style="color: red" class="pi pi-times"></i>
             }</td>
-          <td><button pButton class="p-1" type="button" label="View" (click)="viewDetails(exec)"></button></td>
+          <td><span class="text-indigo-500 cursor-pointer underline" (click)="viewDetails(agent)">View Logs</span></td>
         </tr>
       </ng-template>
     </p-table>

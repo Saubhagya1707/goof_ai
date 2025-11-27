@@ -2,6 +2,7 @@
 export interface ToolOut {
   name: string;
   description: string;
+  logo_uri: string
 }
 export interface UserBasic {
   id: number;
@@ -28,6 +29,9 @@ export interface Agent {
   owner: UserBasic | null;
   tools: ToolOut[];
   active: boolean;
+  last_executed: Date
+  created_at: Date
+  updated_at: Date
 }
 
 export interface AgentExecution {

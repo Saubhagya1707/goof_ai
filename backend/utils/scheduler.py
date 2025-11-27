@@ -34,7 +34,7 @@ async def run_agents_by_frequency(frequency):
 async def scheduler_loop():
     while True:
         # Every minute
-        # await run_agents_by_frequency('every_minute')
+        await run_agents_by_frequency('every_minute')
         # Every hour
         if time.localtime().tm_min == 0:
             await run_agents_by_frequency('hourly')

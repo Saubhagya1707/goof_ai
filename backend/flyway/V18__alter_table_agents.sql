@@ -1,0 +1,21 @@
+
+ALTER TABLE agents 
+ADD COLUMN created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+ADD COLUMN updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+ADD COLUMN last_executed TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER agents_updated_at_tr
+BEFORE UPDATE ON agents
+FOR EACH ROW
+EXECUTE PROCEDURE update_updated_at_column();
+
+ALTER TABLE tools
+ADD COLUMN logo_uri TEXT;

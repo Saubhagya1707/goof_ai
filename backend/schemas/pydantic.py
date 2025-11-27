@@ -15,6 +15,7 @@ class FrequencyEnum(str, Enum):
 class ToolOut(BaseModel):
     name: str
     description: str
+    logo_uri: str
     class Config:
         from_attributes = True
 
@@ -36,6 +37,9 @@ class AgentOut(BaseModel):
     owner: UserBasic | None = None
     tools: List[ToolOut] = []
     active: bool
+    created_at: datetime
+    updated_at: datetime
+    last_executed: datetime
 
     class Config:
         from_attributes = True

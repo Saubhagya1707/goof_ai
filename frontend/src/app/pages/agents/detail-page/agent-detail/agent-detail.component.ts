@@ -9,13 +9,15 @@ import { TableModule } from 'primeng/table';
 import { CommonModule, DatePipe } from '@angular/common';
 import { AgentService } from '../../../../services/agent.service';
 import { ButtonModule } from 'primeng/button';
+import { Tooltip } from "primeng/tooltip";
+import { Ripple } from "primeng/ripple";
 
 
 
 @Component({
   selector: 'agent-detail',
   templateUrl: './agent-detail.component.html',
-  imports: [ChartModule, SelectModule, FormsModule, CardModule, TableModule, DatePipe, CommonModule, ButtonModule],
+  imports: [ChartModule, SelectModule, FormsModule, CardModule, TableModule, DatePipe, CommonModule, ButtonModule, Tooltip, Ripple],
 })
 export class AgentDetailComponent implements OnInit {
 

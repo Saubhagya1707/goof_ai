@@ -39,10 +39,15 @@ class AgentExecutor:
         self.db.commit()
         for log in db_logs:
             self.db.refresh(log)
+        if self.logs[-1].event == EVENT_TYPE.RESPONSE_GENERATED:
+            self.execution.status = True
         self.execution.completed_at = datetime.now()
+        self.agent.last_executed = datetime.now()
+        self.db.add(self.agent)
         self.db.add(self.execution)
         self.db.commit()
         self.db.refresh(self.execution)
+        self.db.refresh(self.agent)
 
     def clean_schema(self,schema: dict) -> dict:
         """Remove $ref and inline $defs definitions for Gemini compatibility."""

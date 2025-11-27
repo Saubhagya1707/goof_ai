@@ -28,6 +28,7 @@ class Tool(Base):
     provider_id = Column(Integer, ForeignKey("oauth_provider.id"), nullable=True)  # Renamed for clarity
     provider = relationship("OAuthProvider", back_populates="tools")  # Define the relationship
     scopes = Column(ARRAY(String), nullable=True)
+    logo_uri = Column(String, nullable=True)
 
     agents = relationship("Agent", secondary="agent_tools", back_populates="tools")
 
@@ -41,6 +42,10 @@ class Agent(Base):
     frequency = Column(String(10), nullable=True)  # Enum: 'hourly', 'daily', 'weekly'
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     active = Column(Boolean, default=True, nullable=False)
+
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
+    last_executed = Column(TIMESTAMP(timezone=True), server_default=func.now()) 
     
     owner = relationship("User", foreign_keys=[owner_id])
     tools = relationship("Tool", secondary="agent_tools", back_populates="agents")
