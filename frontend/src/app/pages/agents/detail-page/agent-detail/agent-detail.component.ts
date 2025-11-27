@@ -27,7 +27,7 @@ interface PageData {
 })
 export class AgentDetailComponent implements OnInit {
   first: number = 0;
-
+  loading: boolean = false;
   rows: number = 10;
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute)
   private agentService: AgentService = inject(AgentService);
@@ -37,6 +37,7 @@ export class AgentDetailComponent implements OnInit {
   executionPageData!: PageData
 
   ngOnInit() {
+    this.loading = true;
     const agentId = this.activatedRoute.snapshot.paramMap.get('agentId');
     const object = this.activatedRoute.snapshot.queryParams['data'];
     const agent: Agent = JSON.parse(atob(object)) as Agent;
@@ -61,7 +62,10 @@ export class AgentDetailComponent implements OnInit {
         // PrimeNG expects "first" as starting index
         this.first = (result.page - 1) * result.size;
       },
-      error: (err) => console.error(err)
+      error: (err) => console.error(err),
+      complete: () => {
+        this.loading = false;
+      }
     });
   }
   viewDetails(_t47: any) {

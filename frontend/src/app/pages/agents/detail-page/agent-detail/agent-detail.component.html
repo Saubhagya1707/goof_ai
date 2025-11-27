@@ -66,7 +66,7 @@
   <div class="mt-6">
     <h3 class="text-lg font-semibold">Executions</h3>
     <!-- Example: using p-table for executions -->
-    <p-table  [value]="executions" [tableStyle]="{ 'min-width': '100%' }">
+    <p-table [loading]="loading"  [value]="executions" [tableStyle]="{ 'min-width': '100%' }">
       <ng-template #header>
         <tr>
           <th>Id</th>
