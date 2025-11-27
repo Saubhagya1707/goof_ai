@@ -3,7 +3,7 @@ import { ChartModule } from 'primeng/chart';
 import { SelectModule } from 'primeng/select';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Agent, AgentExecution, PaginatedResponse } from '../../../../interfaces/interfaces';
+import { Agent, AgentExecution, PaginatedResponse, ToolOut } from '../../../../interfaces/interfaces';
 import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -12,6 +12,9 @@ import { ButtonModule } from 'primeng/button';
 import { Tooltip } from "primeng/tooltip";
 import { Ripple } from "primeng/ripple";
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
+import { DialogModule } from 'primeng/dialog';
+import { TabsModule } from 'primeng/tabs';
+import { ToolService } from '../../../../services/tool.service';
 
 interface PageData {
   page: number
@@ -23,7 +26,7 @@ interface PageData {
 @Component({
   selector: 'agent-detail',
   templateUrl: './agent-detail.component.html',
-  imports: [ChartModule, SelectModule, FormsModule, CardModule, TableModule, DatePipe, CommonModule, ButtonModule, Tooltip, Ripple, PaginatorModule],
+  imports: [ChartModule, SelectModule, FormsModule, CardModule, TableModule, DatePipe, CommonModule, ButtonModule, Tooltip, Ripple, PaginatorModule, DialogModule, TabsModule],
 })
 export class AgentDetailComponent implements OnInit {
   first: number = 0;
@@ -31,10 +34,13 @@ export class AgentDetailComponent implements OnInit {
   rows: number = 10;
   private activatedRoute: ActivatedRoute = inject(ActivatedRoute)
   private agentService: AgentService = inject(AgentService);
+  private toolService: ToolService = inject(ToolService);
   agentId!: number
   agent!: Agent
   executions: AgentExecution[] = []
   executionPageData!: PageData
+  visible: boolean = false
+  marketTools: ToolOut[] = []
 
   ngOnInit() {
     this.loading = true;
@@ -48,6 +54,15 @@ export class AgentDetailComponent implements OnInit {
     }
 
     this.loadExecutions();
+    this.loadTools();
+  }
+
+  loadTools() {
+    this.toolService.getAllTools().subscribe({
+      next: (res: ToolOut[]) => {
+        this.marketTools = res;
+      }
+    })
   }
 
   loadExecutions(page: number = 1, size: number = 10) {

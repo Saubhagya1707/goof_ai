@@ -59,6 +59,7 @@
       @for(tool of agent.tools; track agent.id) {
         <img [pTooltip]="tool.name" style="height: 15px; width: 15px;" [src]="tool.logo_uri"/>
       }
+      <i pTooltip="Configure" pRipple (click)="visible = true" class="ml-2 pi pi-cog cursor-pointer"></i>
     </div>
 
   </div>
@@ -101,3 +102,41 @@
   </div>
 
 </p-card>
+
+<p-dialog draggable="false" header="Tools" [modal]="true" [(visible)]="visible" [style]="{ height: '100rem', width: '50rem', background: 'white', color: 'black', padding: '1rem' }" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+    <p-tabs value="0">
+    <p-tablist>
+        <p-tab class="p-1" value="0">Installed</p-tab>
+        <p-tab class="p-1" value="1">Marketplace</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+        <p-tabpanel value="0">
+            @for (tool of agent.tools; track $index) {
+                <div class="mt-2">
+                    <p-card  [header]="tool.name">
+                        <div class="flex flex-row align-items-center">
+                            <img style="height: 15px; width: 15px;" [src]="tool.logo_uri" />
+                            <span class="ml-2">{{tool.description}}</span>
+                            <i class="ml-auto pi pi-pencil"></i>
+                        </div>
+                    </p-card>
+                </div>
+            }
+        </p-tabpanel>
+        <p-tabpanel value="1">
+            <!-- List all the tools -->
+            @for (tool of marketTools; track $index) {
+                <div class="mt-2">
+                    <p-card  [header]="tool.name">
+                        <div class="flex flex-row align-items-center">
+                            <img style="height: 15px; width: 15px;" [src]="tool.logo_uri" />
+                            <span class="ml-2">{{tool.description}}</span>
+                            <!-- <i class="ml-auto pi pi-pencil"></i> -->
+                        </div>
+                    </p-card>
+                </div>
+            }
+        </p-tabpanel>
+    </p-tabpanels>
+</p-tabs>
+</p-dialog>
