@@ -10,11 +10,13 @@
 *{
     padding: 0;
     margin: 0;
-    border-color: var(--p-border);
+    // border-color: var(--p-border);
+    // background-color: #dad9d9;
+    font-family: Arial, Helvetica, sans-serif;
 }
     
 html {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .internal-page-header {
@@ -46,6 +48,16 @@ html {
 }
 
 .p-card {
+  background-color: #D9EAFD;
   margin: 0 0.5rem 0 0.5rem;
   padding: 0 0.5rem 0 0.5rem;
+}
+
+.breadcrumb {
+  border-bottom: 1px solid #9AA6B2;
+  // box-shadow: 0 10px 5px rgba(0, 0, 0, 0.3);
+}
+
+.navbar {
+  background-color: #577ba5;
 }

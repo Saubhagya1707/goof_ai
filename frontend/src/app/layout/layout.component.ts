@@ -17,9 +17,9 @@ import { FormsModule } from '@angular/forms';
   imports: [SidebarComponent, RouterModule, BreadcrumbComponent, CommonModule, FooterComponent, RippleModule, SelectModule, TooltipModule, FormsModule],
   template: `
     <div class="w-full h-screen flex flex-column relative  overflow-hidden">
-      <header class="border-bottom-1 h-3rem flex align-items-center gap-2 px-2">
+      <header  class="navbar h-4rem flex align-items-center gap-2 px-2">
         <div pRipple class="cursor-pointer p-2" (click)="toggleSidebar($event)">
-          <i class="pi pi-bars" style="color: var(--p-primary-400);"></i>
+          <i class="pi pi-bars" ></i>
         </div>
         <h2 class="text-secondary">goof.AI</h2>
         <div class="ml-auto inline-flex align-items-center gap-2">
@@ -29,7 +29,7 @@ import { FormsModule } from '@angular/forms';
       <breadcrumb [items]="(layoutService.breadcrumbItems$ | async) ?? []"></breadcrumb>
       <div class="flex flex-1 overflow-hidden">
         <sidebar [isClosed]="config.sidebar.collapsed" [sidebarItems]="sidebarItems"></sidebar>
-        <main class="main flex-1  border-primary overflow-y-auto">
+        <main class="main flex-1  border-primary overflow-y-auto" style="background-color: #F8FAFC">
           <router-outlet></router-outlet>
         </main>
       </div>

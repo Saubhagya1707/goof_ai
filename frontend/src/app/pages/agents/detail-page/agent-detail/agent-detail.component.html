@@ -14,19 +14,19 @@
   <div class="grid mt-2 mb-1 p-0">
     
     <!-- Last Execution -->
-    <div class="col-12 md:col-6 flex mb-1">
+    <div class="col-12 md:col-4 flex mb-1">
       <div class="font-bold mr-3 w-8rem">Last Execution:</div>
       <div>{{ agent.last_executed | date:'short' }}</div>
     </div>
 
     <!-- Created At -->
-    <div class="col-12 md:col-6 flex mb-1">
+    <div class="col-12 md:col-4 flex mb-1">
       <div class="font-bold mr-3 w-8rem">Created At:</div>
       <div>{{ agent.created_at | date:'short' }}</div>
     </div>
 
     <!-- Active -->
-    <div class="col-12 md:col-6 flex mb-1">
+    <div class="col-12 md:col-4 flex mb-1">
       <div class="font-bold mr-3 w-8rem">Active:</div>
 
       <div class="flex align-items-center gap-2">
@@ -41,20 +41,20 @@
     </div>
 
     <!-- Is Scheduled -->
-    <div class="col-12 md:col-6 flex mb-1">
+    <div class="col-12 md:col-4 flex mb-1">
       <div class="font-bold mr-3 w-8rem">Is Scheduled:</div>
       <div>{{ agent.is_scheduled ? 'Yes' : 'No' }}</div>
     </div>
 
     <!-- Frequency -->
-    <div *ngIf="agent.is_scheduled" class="col-12 md:col-6 flex mb-1">
+    <div *ngIf="agent.is_scheduled" class="col-12 md:col-4 flex mb-1">
       <div class="font-bold mr-3 w-8rem">Frequency:</div>
       <div>{{ agent.frequency?.replace('_', ' ') }}</div>
       <i (click)="updateFrequency()" pRipple pTooltip="update" class="pi pi-pencil ml-2 cursor-pointer"></i>
     </div>
 
      <!-- Frequency -->
-    <div class="col-12 md:col-6 flex mb-1">
+    <div class="col-12 md:col-4 flex mb-1">
       <div class="font-bold mr-3 w-8rem">Connected Tools:</div>
       @for(tool of agent.tools; track agent.id) {
         <img [pTooltip]="tool.name" style="height: 15px; width: 15px;" [src]="tool.logo_uri"/>
@@ -67,9 +67,9 @@
   <div class="mt-6">
     <h3 class="text-lg font-semibold">Executions</h3>
     <!-- Example: using p-table for executions -->
-    <p-table [loading]="loading"  [value]="executions" [tableStyle]="{ 'min-width': '100%' }">
+    <p-table class="p-2" [loading]="loading"  stripedRows="true"  showGridlines="false" [value]="executions" [tableStyle]="{ 'min-width': '100%' }">
       <ng-template #header>
-        <tr>
+        <tr class="text-s">
           <th>Id</th>
           <th>Started At</th>
           <th>Completed At</th>
@@ -79,15 +79,15 @@
       </ng-template>
       <ng-template #body let-exec>
         <tr>
-            <td>{{exec.id}}</td>
-          <td>{{ exec.started_at | date:'short' }}</td>
-          <td>{{ exec.completed_at ? (exec.completed_at | date:'short') : 'NA' }} </td>
+            <td class="text-xs">{{exec.id}}</td>
+          <td class="text-xs">{{ exec.started_at | date:'short' }}</td>
+          <td class="text-xs">{{ exec.completed_at ? (exec.completed_at | date:'short') : 'NA' }} </td>
           <td>@if (exec.status) {
-            <i style="color: green" class="pi pi-check"></i>
+            <i style="color: green" class="text-xs pi pi-check"></i>
             }@else {
-                <i style="color: red" class="pi pi-times"></i>
+                <i style="color: red" class="text-xs pi pi-times"></i>
             }</td>
-          <td><span class="text-indigo-500 cursor-pointer underline" (click)="viewDetails(agent)">View Logs</span></td>
+          <td><span class="text-xs text-indigo-500 cursor-pointer underline" (click)="viewDetails(agent)">View Logs</span></td>
         </tr>
       </ng-template>
     </p-table>
@@ -112,12 +112,25 @@
     <p-tabpanels>
         <p-tabpanel value="0">
             @for (tool of agent.tools; track $index) {
-                <div class="mt-2">
-                    <p-card  [header]="tool.name">
-                        <div class="flex flex-row align-items-center">
-                            <img style="height: 15px; width: 15px;" [src]="tool.logo_uri" />
-                            <span class="ml-2">{{tool.description}}</span>
-                            <i class="ml-auto pi pi-pencil"></i>
+                <div class="my-2">
+                    <p-card [style]="{padding: '0.2rem'}" [header]="tool.name">
+                        <div class="flex flex-column gap-2">
+                            <div>
+                                @if (tool.provider_id) {
+                                    <p-tag class="p-1" severity="warn" value="Needs Authentication" />
+                                }
+                            </div>
+                            <div class="flex flex-row align-items-center">
+                                <img style="height: 15px; width: 15px;" [src]="tool.logo_uri" />
+                                <span class="ml-2">{{ tool.description }}</span>
+
+                                <div class="ml-auto flex flex-row gap-2">
+                                
+
+                                <i class="pi pi-pencil cursor-pointer"></i>
+                                </div>
+                            </div>
+
                         </div>
                     </p-card>
                 </div>
@@ -126,12 +139,25 @@
         <p-tabpanel value="1">
             <!-- List all the tools -->
             @for (tool of marketTools; track $index) {
-                <div class="mt-2">
-                    <p-card  [header]="tool.name">
-                        <div class="flex flex-row align-items-center">
-                            <img style="height: 15px; width: 15px;" [src]="tool.logo_uri" />
-                            <span class="ml-2">{{tool.description}}</span>
-                            <!-- <i class="ml-auto pi pi-pencil"></i> -->
+                <div class="my-2">
+                    <p-card [style]="{padding: '0.2rem'}"  [header]="tool.name">
+                        <div class="flex flex-column gap-2">
+                            <div>
+                                @if (tool.provider_id) {
+                                    <p-tag class="p-1" severity="warn" value="Needs Authentication" />
+                                }
+                            </div>
+                            <div class="flex flex-row align-items-center">
+                                <img style="height: 15px; width: 15px;" [src]="tool.logo_uri" />
+                                <span class="ml-2">{{ tool.description }}</span>
+
+                                <div class="ml-auto flex flex-row gap-2">
+                                
+
+                                <i pTooltip=". Install" class="pi pi-plus cursor-pointer"></i>
+                                </div>
+                            </div>
+
                         </div>
                     </p-card>
                 </div>

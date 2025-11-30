@@ -8,7 +8,7 @@ import { RouterModule } from '@angular/router';
   selector: 'breadcrumb',
   imports: [Breadcrumb, RouterModule],
   template: `
-    <div class="h-2rem border-bottom-1 flex align-items-center px-2">
+    <div class="breadcrumb h-2rem ml-2 flex align-items-center px-2">
       <p-breadcrumb [model]="items" [home]="home">
         <ng-template #item let-item>
           <a class="cursor-pointer" [routerLink]="item.path">

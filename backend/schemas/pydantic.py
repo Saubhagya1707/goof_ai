@@ -16,6 +16,7 @@ class ToolOut(BaseModel):
     name: str
     description: str
     logo_uri: str
+    provider_id: int
     class Config:
         from_attributes = True
 

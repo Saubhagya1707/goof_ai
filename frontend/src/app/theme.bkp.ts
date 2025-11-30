@@ -87,6 +87,7 @@ const Cora = definePreset(Nora, {
   components: {
     button: {
       colorScheme: {
+        
         light: {
           
           background: '{primary.400}',
@@ -248,14 +249,8 @@ const Cora = definePreset(Nora, {
     datatable: {
       colorScheme: {
         light: {
-          body: {
-            cell: {
-              padding: '1rem'
-            }
-          },
           header: {
             cell: {
-              padding: '1rem',
               background: '#ffffff',
               hover: {
                 background: '{hover}',
@@ -269,7 +264,6 @@ const Cora = definePreset(Nora, {
               background: '{hover}',
             }
           },
-          
           footer: {
             background: '#ffffff'
           },

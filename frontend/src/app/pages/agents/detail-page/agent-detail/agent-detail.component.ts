@@ -15,6 +15,7 @@ import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { DialogModule } from 'primeng/dialog';
 import { TabsModule } from 'primeng/tabs';
 import { ToolService } from '../../../../services/tool.service';
+import { TagModule } from 'primeng/tag';
 
 interface PageData {
   page: number
@@ -26,7 +27,7 @@ interface PageData {
 @Component({
   selector: 'agent-detail',
   templateUrl: './agent-detail.component.html',
-  imports: [ChartModule, SelectModule, FormsModule, CardModule, TableModule, DatePipe, CommonModule, ButtonModule, Tooltip, Ripple, PaginatorModule, DialogModule, TabsModule],
+  imports: [ChartModule,TagModule, SelectModule, FormsModule, CardModule, TableModule, DatePipe, CommonModule, ButtonModule, Tooltip, Ripple, PaginatorModule, DialogModule, TabsModule],
 })
 export class AgentDetailComponent implements OnInit {
   first: number = 0;

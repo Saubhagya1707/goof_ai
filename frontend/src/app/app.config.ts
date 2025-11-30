@@ -5,6 +5,8 @@ import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
 import Cora from './theme';
 import Dora from './b&wtheme';
+import Aura from '@primeng/themes/aura';
+import Lara from '@primeng/themes/lara'
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { AuthInterceptor } from './pages/login/auth.interceptor';
 
@@ -19,7 +21,7 @@ export const appConfig: ApplicationConfig = {
         providePrimeNG({
           ripple: true,
           theme: {
-            preset: Cora,
+            preset: Aura,
             options: {
                 prefix: 'p',
                 darkModeSelector: false,

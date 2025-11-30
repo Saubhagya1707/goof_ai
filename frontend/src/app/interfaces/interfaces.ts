@@ -3,6 +3,7 @@ export interface ToolOut {
   name: string;
   description: string;
   logo_uri: string
+  provider_id: number
 }
 export interface UserBasic {
   id: number;
